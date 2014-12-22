@@ -18,14 +18,6 @@ read_data_tables <- function(dirname, test_or_train = "test") {
 
     ## This also creates good names for everything, because it's easiest to do it now.
     
-
-## Stuff to implement if I have time:
-#PJH# if (! file.exists("./data")) {
-#PJH#     dir.create("./data") }
-#PJH# fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-#PJH# download.file(fileUrl,destfile="./data/getdata_projectfiles_UCI_HAR_Dataset.zip",method="curl")
-#PJH# unzip
-
     dirname <- paste(dirname, test_or_train, "/", sep = "")
     fullname <- paste(dirname, "subject_", test_or_train, ".txt", sep = "") 
     subject.table <- data.table(read.table(fullname,                      # Single column w/ subject ids    # dim 1 matches X_features.table
@@ -53,19 +45,17 @@ read_data_tables <- function(dirname, test_or_train = "test") {
     ## Read in the data with the "features" -- X_test.txt or X_train.txt
     ## This is the summarized information derived from the inertial information
     ## which was derived from the raw accelerometer and gyroscopic signals.
-
     
     fullname <- paste(dirname, "X_", test_or_train, ".txt", sep ="") 
-    X_features.table <- data.table(read.table(fullname,                                  # dim(X_features.table) [1] 2947  561  # test version
-                                              header = FALSE, sep ="", col.names = feature_names))    #          [1] 7352  561  # train version
-
+    X_features.table <- data.table(read.table(fullname,                                  
+                                              header = FALSE, sep ="", col.names = feature_names))  
 
     ## We weren't asked to preserve information about the phase, but I hate information loss.
     phase <- data.table(Phase = rep(ifelse (test_or_train == "test", 1, 2), each = dim(activity.table)[1]))
     phase$Phase <- factor(phase$Phase, levels = c(1, 2), labels = c("test", "train"))
  
     out.table <- cbind(subject.table, phase, activity.table, X_features.table)
-}
+}                                       
 
 test.table <- read_data_tables("data/UCI HAR Dataset/", "test")
 train.table <- read_data_tables("data/UCI HAR Dataset/", "train")
